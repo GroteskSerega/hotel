@@ -1,0 +1,24 @@
+# Build
+FROM bellsoft/liberica-native-image-kit-container:jdk-21-nik-23-musl AS builder
+WORKDIR /app
+COPY . .
+
+# Build binary Instrumented
+RUN ./gradlew nativeCompile -PnativeArgs="--pgo-instrument" --no-daemon
+
+# Compile
+# In CI - start stress tests
+# with default.iprof
+RUN ./build/native/nativeCompile/hotel & sleep 30 && curl ... | true
+
+# Final compile with profile
+RUN ./gradlew nativeCompile -PnativeArgs="--pgo=default.iprof" --no-daemon
+
+# Get Alpaquito
+FROM bellsoft/alpaquita-linux-base:musl
+WORKDIR /app
+RUN addgroup -S axiom && adduser -S axiom -G axiom
+USER axiom:axiom
+
+COPY --from=builder /app/build/native/nativeCompile/hotel ./app
+ENTRYPOINT ["./app", "-Xmx64m", "-Xms64m"]

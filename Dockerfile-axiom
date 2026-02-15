@@ -1,0 +1,26 @@
+# Copy layers
+FROM bellsoft/liberica-runtime-container:jdk-21-slim-musl AS builder
+WORKDIR /app
+COPY build/libs/*.jar app.jar
+RUN java -Djarmode=layertools -jar app.jar extract
+
+# Make final image:
+FROM bellsoft/liberica-runtime-container:jdk-21-slim-musl
+WORKDIR /app
+
+RUN addgroup -S axiom && adduser -S axiom -G axiom
+USER axiom:axiom
+
+# Copy layers for cache
+COPY --from=builder /app/dependencies/ ./
+COPY --from=builder /app/spring-boot-loader/ ./
+COPY --from=builder /app/snapshot-dependencies/ ./
+COPY --from=builder /app/application/ ./
+
+# Optimization for java 21
+ENTRYPOINT ["java", \
+            "-XX:MaxRAMPercentage=75.0", \
+            "-XX:+UseG1GC", \
+            "-XX:+UnlockExperimentalVMOptions", \
+            "-Dspring.threads.virtual.enabled=true", \
+            "org.springframework.boot.loader.launch.JarLauncher"]

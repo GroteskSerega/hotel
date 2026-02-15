@@ -1,0 +1,25 @@
+# Build binary
+FROM bellsoft/liberica-native-image-kit-container:jdk-21-nik-23-musl AS build
+WORKDIR /app
+
+COPY . .
+
+# Build NIK with Gradle
+RUN chmod +x gradlew && ./gradlew nativeCompile -x test --no-daemon
+
+# Get Linux
+# gcc image - 800 mb
+# musl image - 200 mb
+# FROM bellsoft/alpaquita-linux-gcc:15.2-musl
+FROM bellsoft/alpaquita-linux-base:musl
+WORKDIR /app
+
+# Create User
+RUN addgroup -S axiom && adduser -S axiom -G axiom
+USER axiom:axiom
+
+# Copy binary
+COPY --from=build /app/build/native/nativeCompile/hotel ./app
+
+# Start
+ENTRYPOINT ["./app", "-Dio.netty.noUnsafe=true"]
