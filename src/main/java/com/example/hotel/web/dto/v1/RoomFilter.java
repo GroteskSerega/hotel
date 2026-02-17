@@ -1,5 +1,6 @@
 package com.example.hotel.web.dto.v1;
 
+import com.example.hotel.validation.RoomFilterValid;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
@@ -13,6 +14,7 @@ import static com.example.hotel.web.dto.RegexDto.CYRILLIC_LATIN_DIGITS_SIGNS_REG
 import static com.example.hotel.web.dto.v1.RoomErrorMessageTemplates.*;
 import static com.example.hotel.web.dto.v1.RoomErrorMessageTemplates.VALIDATE_ROOM_DESCRIPTION_INCORRECT_REGEX;
 
+@RoomFilterValid
 public record RoomFilter(
         @Min(value = PAGE_SIZE_MIN, message = VALIDATE_PAGE_SIZE_MIN_INCORRECT)
         @Max(value = PAGE_SIZE_MAX, message = VALIDATE_PAGE_SIZE_MAX_INCORRECT)

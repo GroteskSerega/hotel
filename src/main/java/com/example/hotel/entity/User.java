@@ -6,7 +6,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +17,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-@Table(name = "rooms")
-public class Room {
+@Table(name = "users")
+public class User {
 
     @Id
     @GeneratedValue
@@ -27,29 +26,21 @@ public class Room {
     @EqualsAndHashCode.Include
     private UUID id;
 
-    @Column(nullable = false)
-    private String name;
+    @Column(nullable = false, unique = true)
+    private String username;
 
     @Column(nullable = false)
-    private String description;
-
-    @Column(name = "room_number", nullable = false)
-    private String roomNumber;
+    private String password;
 
     @Column(nullable = false)
-    private BigDecimal price;
+    private String email;
 
-    @Column(nullable = false)
-    private Integer capacity;
-
-    @Column(name = "unavailable_dates")
-//    @ElementCollection
-    private List<Instant> unavailableDates = new ArrayList<>();
-
-    @ManyToOne
-    @JoinColumn(name = "hotel_id", nullable = false)
+    @OneToMany(fetch = FetchType.LAZY,
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     @ToString.Exclude
-    private Hotel hotel;
+    private List<Role> roles = new ArrayList<>();
 
     @CreationTimestamp
     @Column(updatable = false)
