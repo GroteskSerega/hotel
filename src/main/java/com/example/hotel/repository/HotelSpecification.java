@@ -9,9 +9,9 @@ import org.springframework.data.jpa.domain.Specification;
 import java.text.MessageFormat;
 import java.time.Instant;
 
-public interface HotelSpecification {
+import static com.example.hotel.repository.SpecificationRegex.TEMPLATE_LIKE;
 
-    String TEMPLATE_LIKE = "%{0}%";
+public interface HotelSpecification {
 
     static Specification<Hotel> withFilter(HotelFilter hotelFilter) {
         return Specification.allOf(byName(hotelFilter.name())
