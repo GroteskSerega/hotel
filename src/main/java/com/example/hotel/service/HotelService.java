@@ -4,6 +4,7 @@ import com.example.hotel.entity.Hotel;
 import com.example.hotel.exception.EntityNotFoundException;
 import com.example.hotel.mapper.HotelMapper;
 import com.example.hotel.repository.HotelRepository;
+import com.example.hotel.repository.HotelSpecification;
 import com.example.hotel.web.dto.v1.HotelFilter;
 import com.example.hotel.web.dto.v1.HotelUpsertRequest;
 import lombok.RequiredArgsConstructor;
@@ -28,9 +29,10 @@ public class HotelService {
 
     public List<Hotel> findAll(HotelFilter hotelFilter) {
         return hotelRepository.findAll(
+                HotelSpecification.withFilter(hotelFilter),
                 PageRequest.of(
                         hotelFilter.pageNumber(),
-                        hotelFilter.pageNumber()
+                        hotelFilter.pageSize()
                 )
         ).getContent();
     }

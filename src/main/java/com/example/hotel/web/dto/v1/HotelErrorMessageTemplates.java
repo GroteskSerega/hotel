@@ -1,13 +1,13 @@
 package com.example.hotel.web.dto.v1;
 
 public class HotelErrorMessageTemplates {
+
     public static final String VALIDATE_HOTEL_NAME_BLANK =
             "Поле Наименование (name) отеля должно быть заполнено";
     public static final String VALIDATE_HOTEL_NAME_INCORRECT_SIZE =
             "Поле Наименование (name) отеля должно содержать от {min} до {max} символов";
     public static final String VALIDATE_HOTEL_NAME_INCORRECT_REGEX =
             "Поле Наименование (name) отеля должно содержать латиницы, кириллицы и знаки препинаний";
-
 
     public static final String VALIDATE_AD_TITLE_BLANK =
             "Поле Заголовок (adTitle) объявления должно быть заполнено";
