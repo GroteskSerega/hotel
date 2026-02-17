@@ -46,7 +46,7 @@ public class HotelController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> create(@RequestBody HotelUpsertRequest request) {
+    public ResponseEntity<Void> create(@RequestBody @Valid HotelUpsertRequest request) {
         return ResponseEntity.created(getUri(
                 hotelService.save(hotelMapper.requestToHotel(request))
         )).build();
@@ -54,7 +54,7 @@ public class HotelController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> update(@PathVariable("id") UUID hotelId,
-                                       @RequestBody HotelUpsertRequest request) {
+                                       @RequestBody @Valid HotelUpsertRequest request) {
         return ResponseEntity.ok()
                 .header("location", getUri(
                         hotelService.update(hotelId, request)

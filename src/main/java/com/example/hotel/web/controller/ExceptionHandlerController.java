@@ -1,6 +1,7 @@
 package com.example.hotel.web.controller;
 
 import com.example.hotel.exception.EntityNotFoundException;
+import com.example.hotel.exception.UserAlreadyExistsException;
 import com.example.hotel.web.dto.ErrorResponse;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -35,6 +36,13 @@ public class ExceptionHandlerController {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(errorMessage,
+                        LocalDateTime.now()));
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> userAlreadyExists(UserAlreadyExistsException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(ex.getLocalizedMessage(),
                         LocalDateTime.now()));
     }
 }

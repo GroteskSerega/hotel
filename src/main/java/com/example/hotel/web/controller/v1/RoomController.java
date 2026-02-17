@@ -46,7 +46,7 @@ public class RoomController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> create(@RequestBody RoomUpsertRequest request) {
+    public ResponseEntity<Void> create(@RequestBody @Valid RoomUpsertRequest request) {
         return ResponseEntity.created(getUri(
                 roomService.save(roomMapper.requestToRoom(request))
         )).build();
@@ -54,7 +54,7 @@ public class RoomController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> update(@PathVariable("id") UUID roomId,
-                                       @RequestBody RoomUpsertRequest request) {
+                                       @RequestBody @Valid RoomUpsertRequest request) {
         return ResponseEntity.ok()
                 .header("location", getUri(
                         roomService.update(roomId, request)
