@@ -8,12 +8,13 @@ import com.example.hotel.repository.HotelSpecification;
 import com.example.hotel.web.dto.v1.HotelFilter;
 import com.example.hotel.web.dto.v1.HotelUpsertRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
-import java.util.List;
 import java.util.UUID;
 
 import static com.example.hotel.service.MessageTemplates.TEMPLATE_HOTEL_NOT_FOUND_EXCEPTION;
@@ -27,14 +28,16 @@ public class HotelService {
 
     private final HotelMapper hotelMapper;
 
-    public List<Hotel> findAll(HotelFilter hotelFilter) {
-        return hotelRepository.fetchAll(
+    public Page<Hotel> findAll(HotelFilter hotelFilter) {
+        Pageable pageable = PageRequest.of(
+                hotelFilter.pageNumber(),
+                hotelFilter.pageSize()
+        );
+
+        return hotelRepository.findAll(
                 HotelSpecification.withFilter(hotelFilter),
-                PageRequest.of(
-                        hotelFilter.pageNumber(),
-                        hotelFilter.pageSize()
-                )
-        ).getContent();
+                pageable
+        );
     }
 
     public Hotel findById(UUID id) {

@@ -5,6 +5,7 @@ import com.example.hotel.web.dto.v1.HotelListResponse;
 import com.example.hotel.web.dto.v1.HotelResponse;
 import com.example.hotel.web.dto.v1.HotelUpsertRequest;
 import org.mapstruct.*;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -16,11 +17,16 @@ public interface HotelMapper {
 
     HotelResponse hotelToResponse(Hotel hotel);
 
-    default HotelListResponse hotelListToHotelListResponse(List<Hotel> hotels) {
-        return new HotelListResponse(hotels
+    default HotelListResponse hotelListToHotelListResponse(Page<Hotel> page) {
+        return new HotelListResponse(page.getContent()
                 .stream()
                 .map(this::hotelToResponse)
-                .toList());
+                .toList(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.getNumber(),
+                page.getSize()
+        );
     }
 
     @Mapping(target = "id", ignore = true)
