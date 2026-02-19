@@ -30,5 +30,10 @@ public class HotelErrorMessageTemplates {
     public static final String VALIDATE_ADDRESS_INCORRECT_REGEX =
             "Поле Адрес (address) должно содержать символы латиницы, кириллицы и знаки препинаний";
 
-
+    public static final String VALIDATE_RATING_BLANK =
+            "Поле Рейтинг (newMark) должно быть заполнено";
+    public static final String VALIDATE_RATING_INCORRECT_MIN_VALUE =
+            "Поле Рейтинг (newMark) должно быть больше или равно {value}";
+    public static final String VALIDATE_RATING_INCORRECT_MAX_VALUE =
+            "Поле Рейтинг (newMark) должно быть меньше или равно {value}";
 }
