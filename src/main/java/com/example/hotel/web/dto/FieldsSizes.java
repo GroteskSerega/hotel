@@ -5,7 +5,7 @@ public class FieldsSizes {
     public static final int PAGE_SIZE_MIN = 1;
     public static final int PAGE_SIZE_MAX = 20;
 
-    public static final int NAME_SIZE_MIN = 4;
+    public static final int NAME_SIZE_MIN = 1;
     public static final int NAME_SIZE_MAX = 50;
 
     public static final int CAPACITY_MIN = 1;

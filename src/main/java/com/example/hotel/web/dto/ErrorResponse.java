@@ -1,7 +1,7 @@
 package com.example.hotel.web.dto;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public record ErrorResponse(String errorMessage,
-                            LocalDateTime timestamp) {
+                            Instant timestamp) {
 }

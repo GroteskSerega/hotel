@@ -6,10 +6,12 @@ import java.time.Instant;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record UserResponse(
+public record BookingResponse(
         UUID id,
-        String username,
-        String email,
+        Instant checkInDate,
+        Instant checkOutDate,
+        RoomResponse roomResponse,
+        UserResponse userResponse,
         Instant createAt,
         Instant updateAt
 ) {

@@ -35,8 +35,10 @@ public record RoomFilter(
         @Pattern(regexp = CYRILLIC_LATIN_DIGITS_SIGNS_REGEX, message = VALIDATE_ROOM_ROOM_NUMBER_INCORRECT_REGEX)
         String roomNumber,
 
+        @PositiveOrZero
         BigDecimal minPrice,
 
+        @PositiveOrZero
         BigDecimal maxPrice,
 
         @Min(value = CAPACITY_MIN, message = VALIDATE_ROOM_CAPACITY_MIN_INCORRECT)

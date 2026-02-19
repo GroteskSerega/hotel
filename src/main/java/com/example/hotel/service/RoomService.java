@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,7 +29,7 @@ public class RoomService {
     private final RoomMapper roomMapper;
 
     public List<Room> findAll(RoomFilter roomFilter) {
-        return roomRepository.findAll(
+        return roomRepository.fetchAll(
                 RoomSpecification.withFilter(roomFilter),
                 PageRequest.of(
                         roomFilter.pageNumber(),
@@ -62,5 +63,10 @@ public class RoomService {
         findById(id);
 
         roomRepository.deleteById(id);
+    }
+
+
+    public Long countUnavailableDatesByRoomIdAndCheckInDateAndCheckOutDate(UUID roomId, Instant checkInDate, Instant checkOutDate) {
+        return roomRepository.countUnavailableDatesByRoomId(roomId, checkInDate, checkOutDate);
     }
 }

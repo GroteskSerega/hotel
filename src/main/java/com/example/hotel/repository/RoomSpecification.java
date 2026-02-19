@@ -6,6 +6,7 @@ import com.example.hotel.entity.Room;
 import com.example.hotel.entity.Room_;
 import com.example.hotel.web.dto.v1.RoomFilter;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
@@ -18,18 +19,20 @@ import static com.example.hotel.repository.SpecificationRegex.TEMPLATE_LIKE;
 public interface RoomSpecification {
 
     static Specification<Room> withFilter(RoomFilter roomFilter) {
-        return Specification.allOf(byName(roomFilter.name())
-                .and(byDescription(roomFilter.description()))
-                .and(byRoomNumber(roomFilter.roomNumber()))
-                .and(byMinPrice(roomFilter.minPrice()))
-                .and(byMaxPrice(roomFilter.maxPrice()))
-                .and(byMinCapacity(roomFilter.minCapacity()))
-                .and(byMaxCapacity(roomFilter.maxCapacity()))
-                .and(byHostelId(roomFilter.hotelId()))
-                .and(byCreateAtBefore(roomFilter.createBefore()))
-                .and(byUpdateAtBefore(roomFilter.updateBefore()))
-                .and(byCreateAtAfter(roomFilter.createAfter()))
-                .and(byUpdateAtAfter(roomFilter.updateAfter())));
+        return Specification.allOf(
+                byName(roomFilter.name()),
+                byDescription(roomFilter.description()),
+                byRoomNumber(roomFilter.roomNumber()),
+                byMinPrice(roomFilter.minPrice()),
+                byMaxPrice(roomFilter.maxPrice()),
+                byMinCapacity(roomFilter.minCapacity()),
+                byMaxCapacity(roomFilter.maxCapacity()),
+                byHotelId(roomFilter.hotelId()),
+                byCreateAtBefore(roomFilter.createBefore()),
+                byUpdateAtBefore(roomFilter.updateBefore()),
+                byCreateAtAfter(roomFilter.createAfter()),
+                byUpdateAtAfter(roomFilter.updateAfter())
+        );
     }
 
     static Specification<Room> byName(String name) {
@@ -114,13 +117,15 @@ public interface RoomSpecification {
         };
     }
 
-    static Specification<Room> byHostelId(UUID hostelId) {
+    static Specification<Room> byHotelId(UUID hostelId) {
         return (root, query, criteriaBuilder) -> {
             if (hostelId == null) {
                 return null;
             }
 
-            return criteriaBuilder.equal(root.get(Room_.HOTEL).get(Hotel_.ID), hostelId);
+            Join<Room, Hotel> hotelJoin = root.join(Room_.HOTEL);
+
+            return criteriaBuilder.equal(hotelJoin.get(Hotel_.ID), hostelId);
         };
     }
 

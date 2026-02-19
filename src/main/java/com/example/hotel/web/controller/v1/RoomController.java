@@ -9,7 +9,6 @@ import com.example.hotel.web.dto.v1.RoomUpsertRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -18,7 +17,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/room")
-@Controller
+@RestController
 public class RoomController {
 
     private static final String pathToRoomResource = "/api/v1/room/{id}";
@@ -56,9 +55,9 @@ public class RoomController {
     public ResponseEntity<Void> update(@PathVariable("id") UUID roomId,
                                        @RequestBody @Valid RoomUpsertRequest request) {
         return ResponseEntity.ok()
-                .header("location", getUri(
+                .location(getUri(
                         roomService.update(roomId, request)
-                ).toString())
+                ))
                 .build();
     }
 

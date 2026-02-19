@@ -28,7 +28,7 @@ public class HotelService {
     private final HotelMapper hotelMapper;
 
     public List<Hotel> findAll(HotelFilter hotelFilter) {
-        return hotelRepository.findAll(
+        return hotelRepository.fetchAll(
                 HotelSpecification.withFilter(hotelFilter),
                 PageRequest.of(
                         hotelFilter.pageNumber(),

@@ -14,12 +14,14 @@ import static com.example.hotel.repository.SpecificationRegex.TEMPLATE_LIKE;
 public interface UserSpecification {
 
     static Specification<User> withFilter(UserFilter userFilter) {
-        return Specification.allOf(byUsername(userFilter.username())
-                .and(byEmail(userFilter.email()))
-                .and(byCreateAtBefore(userFilter.createBefore()))
-                .and(byUpdateAtBefore(userFilter.updateBefore()))
-                .and(byCreateAtAfter(userFilter.createAfter()))
-                .and(byUpdateAtAfter(userFilter.updateAfter())));
+        return Specification.allOf(
+                byUsername(userFilter.username()),
+                byEmail(userFilter.email()),
+                byCreateAtBefore(userFilter.createBefore()),
+                byUpdateAtBefore(userFilter.updateBefore()),
+                byCreateAtAfter(userFilter.createAfter()),
+                byUpdateAtAfter(userFilter.updateAfter())
+        );
     }
 
     static Specification<User> byUsername(String username) {
@@ -28,7 +30,11 @@ public interface UserSpecification {
                 return null;
             }
 
-            return criteriaBuilder.equal(root.get(User_.USERNAME), username);
+            String pattern = MessageFormat.format(TEMPLATE_LIKE, username.toLowerCase());
+
+            Expression<String> lowerCaseField = criteriaBuilder.lower(root.get(User_.USERNAME));
+
+            return criteriaBuilder.like(lowerCaseField, pattern);
         };
     }
 

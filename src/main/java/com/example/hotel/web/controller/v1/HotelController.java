@@ -9,7 +9,6 @@ import com.example.hotel.web.dto.v1.HotelUpsertRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -18,7 +17,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/hotel")
-@Controller
+@RestController
 public class HotelController {
 
     private static final String pathToHotelResource = "/api/v1/hotel/{id}";
@@ -56,9 +55,9 @@ public class HotelController {
     public ResponseEntity<Void> update(@PathVariable("id") UUID hotelId,
                                        @RequestBody @Valid HotelUpsertRequest request) {
         return ResponseEntity.ok()
-                .header("location", getUri(
+                .location(getUri(
                         hotelService.update(hotelId, request)
-                ).toString())
+                ))
                 .build();
     }
 

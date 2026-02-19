@@ -1,7 +1,7 @@
 package com.example.hotel.web.controller.v1;
 
 
-import com.example.hotel.entity.Role;
+import com.example.hotel.aop.AuthoriseUserCreateByAnonymous;
 import com.example.hotel.entity.RoleType;
 import com.example.hotel.mapper.UserMapper;
 import com.example.hotel.service.UserService;
@@ -51,7 +51,7 @@ public class UserController {
         return ResponseEntity.created(getUri(
                 userService.save(
                         userMapper.requestToUser(request),
-                        Role.from(roleType)
+                        roleType
                 )
         )).build();
     }
@@ -61,11 +61,11 @@ public class UserController {
                                        @RequestBody @Valid UserUpsertRequest request,
                                        @RequestParam RoleType roleType) {
         return ResponseEntity.ok()
-                .header("location", getUri(
+                .location(getUri(
                         userService.update(userId,
                                 request,
-                                Role.from(roleType))
-                        ).toString())
+                                roleType)
+                ))
                 .build();
     }
 
