@@ -17,6 +17,50 @@ services:
       timeout: 5s
       retries: 5
 
+  mongo-db:
+    image: mongo:7.0
+    container_name: mongo-db
+    networks:
+      - hotel-network
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: statistics-db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:6.2.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - hotel-network
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:6.2.0
+    depends_on:
+      - zookeeper
+    networks:
+      - hotel-network
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO, kafka.producer.async.DefaultEventHandler=INFO, state.change.logger=INFO"
+#      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://$DOCKERHOST:9092, INSIDE://kafka:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPIC_ENABLE: 'true'
+
 #    hotel-app:
 #      image: hotel:axiom
 #      container_name: hotel-axiom
@@ -35,6 +79,9 @@ services:
 #      depends_on:
 #        postgres-db:
 #          condition: service_healthy
+#        mongo-db:
+#          condition: service_healthy
+#        kafka:
 
 networks:
   hotel-network:

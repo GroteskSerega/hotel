@@ -15,6 +15,12 @@ spring:
       schema: ${DB_SCHEMA:hotel_schema}
       connection-init-sql: CREATE SCHEMA IF NOT EXISTS hotel_schema
       connection-timeout: 10000
+  data:
+    mongodb:
+      uri: mongodb://${MONGODB_USER:root}:${MONGODB_PASSWORD:root}@${MONGODB_HOST:localhost}:${MONGODB_PORT:27017}/${MONGODB_DBNAME:statistics-db}?authSource=admin
+  kafka:
+    bootstrap-servers: ${KAFKA_HOST:localhost}:${KAFKA_PORT:9092}
+
   threads:
     virtual:
       enabled: true
@@ -26,3 +32,8 @@ app:
   security:
     adminUsername: ${APP_ADMIN_USERNAME:admin}
     adminPassword: ${APP_ADMIN_PASSWORD:admin}
+  kafka:
+    kafkaMessageGroupId: "hostel-statistics-group-id"
+    kafkaStatisticsService:
+      kafkaUserCreatedStatus: "user-status-service"
+      kafkaBookingCreatedStatus: "booking-status-service"
