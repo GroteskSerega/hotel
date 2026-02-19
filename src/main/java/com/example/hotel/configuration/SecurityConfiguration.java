@@ -62,6 +62,8 @@ public class SecurityConfiguration {
                         .hasRole("ADMIN")
                         .requestMatchers("/api/v1/room/**")
                         .hasRole("ADMIN")
+                        .requestMatchers("/api/v1/statistics/**")
+                        .hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/v1/user")
                         .permitAll()
                         .anyRequest()
