@@ -8,7 +8,9 @@ import com.example.hotel.repository.RoomSpecification;
 import com.example.hotel.web.dto.v1.RoomFilter;
 import com.example.hotel.web.dto.v1.RoomUpsertRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,14 +30,16 @@ public class RoomService {
 
     private final RoomMapper roomMapper;
 
-    public List<Room> findAll(RoomFilter roomFilter) {
-        return roomRepository.fetchAll(
+    public Page<Room> findAll(RoomFilter roomFilter) {
+        Pageable pageable = PageRequest.of(
+                roomFilter.pageNumber(),
+                roomFilter.pageSize()
+        );
+
+        return roomRepository.findAll(
                 RoomSpecification.withFilter(roomFilter),
-                PageRequest.of(
-                        roomFilter.pageNumber(),
-                        roomFilter.pageSize()
-                )
-        ).getContent();
+                pageable
+        );
     }
 
     public Room findById(UUID id) {

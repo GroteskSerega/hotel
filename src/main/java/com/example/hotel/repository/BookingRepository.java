@@ -15,12 +15,13 @@ import java.util.UUID;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, UUID>, JpaSpecificationExecutor<Booking> {
 
-//    @EntityGraph(attributePaths = {"user", "room"})
-//    Page<Booking> findAll(Specification<Booking> spec, Pageable pageable);
-
     @EntityGraph(attributePaths = {"user", "room"})
     @Query("SELECT b FROM Booking b")
     Slice<Booking> fetchAll(Specification<Booking> spec, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"user", "room", "room.hotel", "room.unavailableDates"})
+//    @Query("SELECT b FROM Booking b")
+    Page<Booking> findAll(Specification<Booking> spec, Pageable pageable);
 
     @Query("SELECT count(*) FROM Booking b " +
             "WHERE b.room.id = :roomId " +

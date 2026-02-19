@@ -23,6 +23,8 @@ public record RoomFilter(
         @PositiveOrZero(message = VALIDATE_PAGE_NUMBER_INCORRECT)
         Integer pageNumber,
 
+        UUID id,
+
         @Size(min = NAME_SIZE_MIN, max = NAME_SIZE_MAX, message = VALIDATE_ROOM_NAME_INCORRECT_SIZE)
         @Pattern(regexp = CYRILLIC_LATIN_DIGITS_SIGNS_REGEX, message = VALIDATE_ROOM_NAME_INCORRECT_REGEX)
         String name,
@@ -50,6 +52,10 @@ public record RoomFilter(
         Integer maxCapacity,
 
         UUID hotelId,
+
+        Instant checkIn,
+
+        Instant checkOut,
 
         Instant createBefore,
 

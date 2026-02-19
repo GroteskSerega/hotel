@@ -21,6 +21,10 @@ public interface RoomRepository extends JpaRepository<Room, UUID>, JpaSpecificat
     @Query("SELECT r FROM Room r")
     Slice<Room> fetchAll(Specification<Room> spec, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"hotel", "unavailableDates"})
+//    @Query("SELECT r FROM Room r")
+    Page<Room> findAll(Specification<Room> spec, Pageable pageable);
+
     @Query("SELECT count(*) FROM Room r " +
             "JOIN r.unavailableDates d " +
             "WHERE r.id = :roomId " +

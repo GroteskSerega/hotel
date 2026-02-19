@@ -9,7 +9,9 @@ import com.example.hotel.repository.RoomRepository;
 import com.example.hotel.security.AppUserPrincipal;
 import com.example.hotel.web.dto.v1.BookingFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,14 +35,16 @@ public class BookingService {
 
     private final RoomRepository roomRepository;
 
-    public List<Booking> findAll(BookingFilter bookingFilter) {
-        return bookingRepository.fetchAll(
+    public Page<Booking> findAll(BookingFilter bookingFilter) {
+        Pageable pageable = PageRequest.of(
+                bookingFilter.pageNumber(),
+                bookingFilter.pageSize()
+        );
+
+        return bookingRepository.findAll(
                 BookingSpecification.withFilter(bookingFilter),
-                PageRequest.of(
-                        bookingFilter.pageNumber(),
-                        bookingFilter.pageSize()
-                )
-        ).getContent();
+                pageable
+        );
     }
 
     public Booking findById(UUID id) {
