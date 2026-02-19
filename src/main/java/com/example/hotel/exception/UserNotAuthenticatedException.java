@@ -1,7 +1,7 @@
 package com.example.hotel.exception;
 
-public class EntityNotFoundException extends RuntimeException {
-    public EntityNotFoundException(String message) {
+public class UserNotAuthenticatedException extends RuntimeException {
+    public UserNotAuthenticatedException(String message) {
         super(message);
     }
 

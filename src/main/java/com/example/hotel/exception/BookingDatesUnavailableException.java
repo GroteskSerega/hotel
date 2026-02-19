@@ -1,7 +1,7 @@
 package com.example.hotel.exception;
 
-public class EntityNotFoundException extends RuntimeException {
-    public EntityNotFoundException(String message) {
+public class BookingDatesUnavailableException extends RuntimeException {
+    public BookingDatesUnavailableException(String message) {
         super(message);
     }
 

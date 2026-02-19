@@ -1,6 +1,8 @@
 package com.example.hotel.service;
 
-import com.example.hotel.entity.Role;
+import com.example.hotel.aop.AuthoriseUserCreateByAnonymous;
+import com.example.hotel.aop.AuthoriseUserUpdateAndDelete;
+import com.example.hotel.entity.RoleType;
 import com.example.hotel.entity.User;
 import com.example.hotel.exception.EntityNotFoundException;
 import com.example.hotel.exception.UserAlreadyExistsException;
@@ -11,6 +13,7 @@ import com.example.hotel.web.dto.v1.UserFilter;
 import com.example.hotel.web.dto.v1.UserUpsertRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +38,7 @@ public class UserService {
     private final UserMapper userMapper;
 
     public List<User> findAll(UserFilter userFilter) {
-        return userRepository.findAll(
+        return userRepository.fetchAll(
                 UserSpecification.withFilter(userFilter),
                 PageRequest.of(
                         userFilter.pageNumber(),
@@ -53,30 +56,31 @@ public class UserService {
     public User findByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() ->
-                        new RuntimeException("Username not found!"));
+                        new UsernameNotFoundException("Username not found!"));
     }
 
+    @AuthoriseUserCreateByAnonymous
     @Transactional
-    public UUID save(User user, Role role) {
+    public UUID save(User user, RoleType roleType) {
         userRepository.findUserIdByUsernameAndEmail(
                 user.getUsername(),
                 user.getEmail()
-        ).orElseThrow(() ->
-                new UserAlreadyExistsException(
-                        MessageFormat.format(TEMPLATE_USER_ALREADY_EXISTS_EXCEPTION,
-                                user.getUsername(),
-                                user.getEmail())));
+        ).ifPresent(id -> {
+                    throw new UserAlreadyExistsException(
+                            MessageFormat.format(TEMPLATE_USER_ALREADY_EXISTS_EXCEPTION,
+                                    user.getUsername(),
+                                    user.getEmail()));
+        });
 
-        user.setRoles(new ArrayList<>(List.of(role)));
+        user.setRoles(new ArrayList<>(List.of(roleType)));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        role.setUser(user);
 
         return userRepository.saveAndFlush(user).getId();
     }
 
+    @AuthoriseUserUpdateAndDelete
     @Transactional
-    public UUID update(UUID userId, UserUpsertRequest request, Role role) {
+    public UUID update(UUID userId, UserUpsertRequest request, RoleType roleType) {
         User existedUser = findById(userId);
 
         userMapper.updateUser(request, existedUser);
@@ -85,15 +89,15 @@ public class UserService {
             existedUser.setPassword(passwordEncoder.encode(request.password()));
         }
 
-        if (role != null) {
+        if (roleType != null) {
             existedUser.getRoles().clear();
-            role.setUser(existedUser);
-            existedUser.getRoles().add(role);
+            existedUser.getRoles().add(roleType);
         }
 
         return userRepository.saveAndFlush(existedUser).getId();
     }
 
+    @AuthoriseUserUpdateAndDelete
     @Transactional
     public void delete(UUID id) {
         findById(id);

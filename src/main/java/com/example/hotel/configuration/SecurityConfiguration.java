@@ -5,9 +5,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -30,33 +31,39 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public AuthenticationManager databaseAuthenticationManager(HttpSecurity http,
-                                                               UserDetailsService userDetailsService,
-                                                               PasswordEncoder encoder) throws Exception {
-        var authManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-
-        authManagerBuilder.userDetailsService(userDetailsService);
-
+    public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService) {
         var authProvider = new DaoAuthenticationProvider(passwordEncoder());
         authProvider.setUserDetailsService(userDetailsService);
 
-        authManagerBuilder.authenticationProvider(authProvider);
+        return authProvider;
+    }
 
-        return authManagerBuilder.build();
+    @Bean
+    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService,
+                                                       PasswordEncoder passwordEncoder) {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder);
+
+        return new ProviderManager(authProvider);
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
                                            AuthenticationManager authenticationManager) throws Exception {
         http.authorizeHttpRequests((auth) ->
-                auth.requestMatchers("/api/v1/user/**",
-                        "/api/v1/hotel",
-                        "/api/v1/room")
-                        .hasAnyRole("USER", "ADMIN")
-                        .anyRequest()
+                auth.requestMatchers(HttpMethod.GET, "/api/v1/hotel")
                         .authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/room")
+                        .authenticated()
+                        .requestMatchers("/api/v1/hotel/**")
+                        .hasRole("ADMIN")
+                        .requestMatchers("/api/v1/room/**")
+                        .hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/v1/user")
-                        .anonymous())
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session ->

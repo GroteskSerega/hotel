@@ -42,8 +42,9 @@ public class Room {
     @Column(nullable = false)
     private Integer capacity;
 
-    @Column(name = "unavailable_dates")
-//    @ElementCollection
+    @ElementCollection
+    @CollectionTable(name = "room_unavailable_dates", joinColumns = @JoinColumn(name = "room_id"))
+    @Column(name = "unavailable_date")
     private List<Instant> unavailableDates = new ArrayList<>();
 
     @ManyToOne

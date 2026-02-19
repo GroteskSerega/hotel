@@ -1,9 +1,9 @@
 package com.example.hotel.security;
 
-import com.example.hotel.entity.Role;
 import com.example.hotel.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -18,7 +18,7 @@ public class AppUserPrincipal implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return user.getRoles()
                 .stream()
-                .map(Role::toAuthority)
+                .map(roleType -> new SimpleGrantedAuthority(roleType.name()))
                 .toList();
     }
 

@@ -1,0 +1,93 @@
+package com.example.hotel.service;
+
+import com.example.hotel.entity.Booking;
+import com.example.hotel.exception.BookingDatesUnavailableException;
+import com.example.hotel.exception.EntityNotFoundException;
+import com.example.hotel.repository.BookingRepository;
+import com.example.hotel.repository.BookingSpecification;
+import com.example.hotel.repository.RoomRepository;
+import com.example.hotel.security.AppUserPrincipal;
+import com.example.hotel.web.dto.v1.BookingFilter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.MessageFormat;
+import java.util.List;
+import java.util.UUID;
+
+import static com.example.hotel.service.MessageTemplates.*;
+
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+@Service
+public class BookingService {
+
+    private final BookingRepository bookingRepository;
+
+    private final RoomService roomService;
+
+    private final UserService userService;
+
+    private final RoomRepository roomRepository;
+
+    public List<Booking> findAll(BookingFilter bookingFilter) {
+        return bookingRepository.fetchAll(
+                BookingSpecification.withFilter(bookingFilter),
+                PageRequest.of(
+                        bookingFilter.pageNumber(),
+                        bookingFilter.pageSize()
+                )
+        ).getContent();
+    }
+
+    public Booking findById(UUID id) {
+        return bookingRepository.findById(id)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(MessageFormat.format(TEMPLATE_BOOKING_NOT_FOUND_EXCEPTION, id)));
+    }
+
+    @Transactional
+    public UUID save(UserDetails userDetails, Booking booking) {
+
+        roomRepository.findByIdWithLock(booking.getRoom().getId())
+                .orElseThrow(() ->
+                        new EntityNotFoundException(TEMPLATE_ROOM_NOT_FOUND_EXCEPTION));
+
+        Long unavailableCount =
+                roomService.countUnavailableDatesByRoomIdAndCheckInDateAndCheckOutDate(
+                        booking.getRoom().getId(),
+                        booking.getCheckInDate(),
+                        booking.getCheckOutDate()
+                );
+
+        if (unavailableCount > 0) {
+            throw new BookingDatesUnavailableException(MessageFormat.format(TEMPLATE_BOOKING_DATES_UNAVAILABLE_EXCEPTION,
+                    booking.getRoom().getId(),
+                    booking.getCheckOutDate(),
+                    booking.getCheckInDate()));
+        }
+
+        Long overlappingCount =
+                bookingRepository.countOverlappingBooking(
+                        booking.getRoom().getId(),
+                        booking.getCheckInDate(),
+                        booking.getCheckOutDate()
+                );
+
+        if (overlappingCount > 0) {
+            throw new BookingDatesUnavailableException(MessageFormat.format(TEMPLATE_BOOKING_DATES_UNAVAILABLE_EXCEPTION,
+                    booking.getRoom().getId(),
+                    booking.getCheckOutDate(),
+                    booking.getCheckInDate()));
+        }
+
+        AppUserPrincipal passport = (AppUserPrincipal) userDetails;
+
+        booking.setUser(userService.findById(passport.getUserId()));
+
+        return bookingRepository.saveAndFlush(booking).getId();
+    }
+}

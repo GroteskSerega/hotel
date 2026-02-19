@@ -38,16 +38,22 @@ public record HotelFilter(
         @Pattern(regexp = CYRILLIC_LATIN_DIGITS_SIGNS_REGEX, message = VALIDATE_ADDRESS_INCORRECT_REGEX)
         String address,
 
+        @PositiveOrZero
         Double minDistanceFromCenter,
 
+        @PositiveOrZero
         Double maxDistanceFromCenter,
 
+        @PositiveOrZero
         Double minRating,
 
+        @PositiveOrZero
         Double maxRating,
 
+        @PositiveOrZero
         Integer minRatingCount,
 
+        @PositiveOrZero
         Integer maxRatingCount,
 
         Instant createBefore,

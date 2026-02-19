@@ -33,7 +33,7 @@ dependencies {
 	implementation("org.mapstruct:mapstruct:1.6.3")
 	annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
 
-	annotationProcessor("org.hibernate.orm:hibernate-jpamodelgen:6.4.4.Final")
+	annotationProcessor("org.hibernate.orm:hibernate-jpamodelgen")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")

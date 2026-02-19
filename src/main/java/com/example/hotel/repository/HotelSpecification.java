@@ -14,18 +14,19 @@ import static com.example.hotel.repository.SpecificationRegex.TEMPLATE_LIKE;
 public interface HotelSpecification {
 
     static Specification<Hotel> withFilter(HotelFilter hotelFilter) {
-        return Specification.allOf(byName(hotelFilter.name())
-                .and(byAdTitle(hotelFilter.adTitle()))
-                .and(byCity(hotelFilter.city()))
-                .and(byAddress(hotelFilter.address()))
-                .and(byMinDistanceFromCenter(hotelFilter.minDistanceFromCenter()))
-                .and(byMaxDistanceFromCenter(hotelFilter.maxDistanceFromCenter()))
-                .and(byMinRating(hotelFilter.minRating()))
-                .and(byMaxRating(hotelFilter.maxRating()))
-                .and(byCreateAtBefore(hotelFilter.createBefore()))
-                .and(byUpdateAtBefore(hotelFilter.updateBefore()))
-                .and(byCreateAtAfter(hotelFilter.createAfter()))
-                .and(byUpdateAtAfter(hotelFilter.updateAfter())));
+        return Specification.allOf(
+                byName(hotelFilter.name()),
+                byAdTitle(hotelFilter.adTitle()),
+                byCity(hotelFilter.city()),
+                byAddress(hotelFilter.address()),
+                byMinDistanceFromCenter(hotelFilter.minDistanceFromCenter()),
+                byMaxDistanceFromCenter(hotelFilter.maxDistanceFromCenter()),
+                byMinRating(hotelFilter.minRating()),
+                byMaxRating(hotelFilter.maxRating()),
+                byCreateAtBefore(hotelFilter.createBefore()),
+                byUpdateAtBefore(hotelFilter.updateBefore()),
+                byCreateAtAfter(hotelFilter.createAfter()),
+                byUpdateAtAfter(hotelFilter.updateAfter()));
     }
 
     static Specification<Hotel> byName(String name) {
