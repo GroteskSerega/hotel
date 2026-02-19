@@ -2,10 +2,7 @@ package com.example.hotel.web.controller.v1;
 
 import com.example.hotel.mapper.HotelMapper;
 import com.example.hotel.service.HotelService;
-import com.example.hotel.web.dto.v1.HotelFilter;
-import com.example.hotel.web.dto.v1.HotelListResponse;
-import com.example.hotel.web.dto.v1.HotelResponse;
-import com.example.hotel.web.dto.v1.HotelUpsertRequest;
+import com.example.hotel.web.dto.v1.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -66,6 +63,18 @@ public class HotelController {
         hotelService.delete(hotelId);
         return ResponseEntity.noContent()
                 .build();
+    }
+
+    @PatchMapping("/{id}/rating")
+    public ResponseEntity<Void> updateRating(@PathVariable("id") UUID hotelId,
+                                            @RequestBody @Valid HotelRatingUpsertRequest request) {
+        return ResponseEntity.ok()
+                .location(getUri(
+                        hotelService.updateRating(
+                                hotelId,
+                                request.newMark()
+                        )
+                )).build();
     }
 
     private URI getUri(UUID id) {

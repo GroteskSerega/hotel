@@ -63,4 +63,36 @@ public class HotelService {
 
         hotelRepository.deleteById(id);
     }
+
+    @Transactional
+    public UUID updateRating(UUID id, Integer newMark) {
+        Hotel existedHotel = hotelRepository.findByIdWithLock(id)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(MessageFormat.format(TEMPLATE_HOTEL_NOT_FOUND_EXCEPTION, id)));
+
+        double currentRating =
+                existedHotel.getRating() != null ? existedHotel.getRating() : 0.0;
+        int currentRatingCount =
+                existedHotel.getRatingCount() != null ? existedHotel.getRatingCount() : 0;
+
+        double totalRating =
+                currentRating * currentRatingCount;
+
+        totalRating =
+                totalRating - currentRating + newMark;
+
+        double rating = 0;
+
+        if (currentRatingCount > 0) {
+            rating = totalRating / currentRatingCount;
+            rating = Math.round(rating * 10.0) / 10.0;
+        } else {
+            rating = totalRating;
+        }
+
+        existedHotel.setRating(rating);
+        existedHotel.setRatingCount(currentRatingCount + 1);
+
+        return hotelRepository.saveAndFlush(existedHotel).getId();
+    }
 }

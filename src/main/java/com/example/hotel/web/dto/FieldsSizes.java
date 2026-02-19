@@ -11,8 +11,8 @@ public class FieldsSizes {
     public static final int CAPACITY_MIN = 1;
     public static final int CAPACITY_MAX = 1000;
 
-    public static final Long RATING_MIN = 0L;
-    public static final Long RATING_MAX = 5L;
+    public static final int RATING_MIN = 1;
+    public static final int RATING_MAX = 5;
 
     public static final Long SEGMENT_FROM_CITY_CENTER_MIN = 0L;
     public static final Long SEGMENT_FROM_CITY_CENTER_MAX = 100L;

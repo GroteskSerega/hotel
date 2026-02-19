@@ -56,6 +56,8 @@ public class SecurityConfiguration {
                         .authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/room")
                         .authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/hotel/{id}/rating")
+                        .authenticated()
                         .requestMatchers("/api/v1/hotel/**")
                         .hasRole("ADMIN")
                         .requestMatchers("/api/v1/room/**")
