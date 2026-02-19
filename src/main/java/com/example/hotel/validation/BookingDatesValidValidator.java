@@ -15,11 +15,11 @@ public class BookingDatesValidValidator implements ConstraintValidator<BookingDa
         }
 
         if (value instanceof BookingFilter filter) {
-            if (filter.checkInDateAfter() == null || filter.checkOutDateBefore() == null) {
-                return true;
+            if (filter.checkInDateAfter() != null && filter.checkOutDateBefore() != null) {
+                return filter.checkInDateAfter().isBefore(filter.checkOutDateBefore());
             }
 
-            return filter.checkInDateAfter().isBefore(filter.checkOutDateBefore());
+            return true;
         }
 
         return true;

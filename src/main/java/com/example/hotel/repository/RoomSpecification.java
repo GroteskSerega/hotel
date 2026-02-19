@@ -1,12 +1,11 @@
 package com.example.hotel.repository;
 
-import com.example.hotel.entity.Hotel;
-import com.example.hotel.entity.Hotel_;
-import com.example.hotel.entity.Room;
-import com.example.hotel.entity.Room_;
+import com.example.hotel.entity.*;
 import com.example.hotel.web.dto.v1.RoomFilter;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
@@ -20,6 +19,8 @@ public interface RoomSpecification {
 
     static Specification<Room> withFilter(RoomFilter roomFilter) {
         return Specification.allOf(
+                byId(roomFilter.id()),
+                isAvailable(roomFilter.checkIn(), roomFilter.checkOut()),
                 byName(roomFilter.name()),
                 byDescription(roomFilter.description()),
                 byRoomNumber(roomFilter.roomNumber()),
@@ -33,6 +34,37 @@ public interface RoomSpecification {
                 byCreateAtAfter(roomFilter.createAfter()),
                 byUpdateAtAfter(roomFilter.updateAfter())
         );
+    }
+
+    static Specification<Room> byId(UUID id) {
+        return (root, query, criteriaBuilder) -> {
+            if (id == null) {
+                return null;
+            }
+
+            return criteriaBuilder.equal(root.get(Room_.ID), id);
+        };
+    }
+
+    static Specification<Room> isAvailable(Instant checkIn,
+                                           Instant checkOut) {
+        return (root, query, criteriaBuilder) -> {
+            if (checkIn == null || checkOut == null) {
+                return null;
+            }
+
+            Subquery<Long> subquery = query.subquery(Long.class);
+            Root<Booking> booking = subquery.from(Booking.class);
+
+            subquery.select(criteriaBuilder.count(booking));
+            subquery.where(
+                    criteriaBuilder.equal(booking.get(Booking_.ROOM), root),
+                    criteriaBuilder.lessThan(booking.get(Booking_.CHECK_IN_DATE), checkOut),
+                    criteriaBuilder.greaterThan(booking.get(Booking_.CHECK_OUT_DATE), checkIn)
+            );
+
+            return criteriaBuilder.equal(subquery, 0L);
+        };
     }
 
     static Specification<Room> byName(String name) {

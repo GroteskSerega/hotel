@@ -5,6 +5,7 @@ import com.example.hotel.web.dto.v1.RoomListResponse;
 import com.example.hotel.web.dto.v1.RoomResponse;
 import com.example.hotel.web.dto.v1.RoomUpsertRequest;
 import org.mapstruct.*;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -17,11 +18,16 @@ public interface RoomMapper {
 
     RoomResponse roomToResponse(Room room);
 
-    default RoomListResponse roomListToRoomListResponse(List<Room> rooms) {
-        return new RoomListResponse(rooms
+    default RoomListResponse roomListToRoomListResponse(Page<Room> rooms) {
+        return new RoomListResponse(rooms.getContent()
                 .stream()
                 .map(this::roomToResponse)
-                .toList());
+                .toList(),
+                rooms.getTotalElements(),
+                rooms.getTotalPages(),
+                rooms.getNumber(),
+                rooms.getSize()
+        );
     }
 
     @Mapping(target = "id", ignore = true)

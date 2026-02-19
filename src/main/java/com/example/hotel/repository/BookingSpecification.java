@@ -4,8 +4,11 @@ import com.example.hotel.entity.Booking;
 import com.example.hotel.entity.Booking_;
 import com.example.hotel.entity.Room_;
 import com.example.hotel.web.dto.v1.BookingFilter;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.awt.print.Book;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -14,10 +17,12 @@ public interface BookingSpecification {
     static Specification<Booking> withFilter(BookingFilter bookingFilter) {
         return Specification.allOf(
                 byRoomId(bookingFilter.roomId()),
-                byCheckInDateBefore(bookingFilter.checkInDateBefore()),
-                byCheckOutDateBefore(bookingFilter.checkOutDateBefore()),
-                byCheckInDateAfter(bookingFilter.checkInDateAfter()),
-                byCheckOutDateAfter(bookingFilter.checkOutDateAfter()),
+//                byCheckInDateBefore(bookingFilter.checkInDateBefore()),
+//                byCheckOutDateBefore(bookingFilter.checkOutDateBefore()),
+//                byCheckInDateAfter(bookingFilter.checkInDateAfter()),
+                byCheckInDateAfterAndCheckOutDateBefore(bookingFilter.checkInDateAfter(),
+                        bookingFilter.checkOutDateBefore()),
+//                byCheckOutDateAfter(bookingFilter.checkOutDateAfter()),
                 byCreateAtBefore(bookingFilter.createBefore()),
                 byUpdateAtBefore(bookingFilter.updateBefore()),
                 byCreateAtAfter(bookingFilter.createAfter()),
@@ -62,6 +67,20 @@ public interface BookingSpecification {
             }
 
             return criteriaBuilder.greaterThanOrEqualTo(root.get(Booking_.CHECK_IN_DATE), checkInDateAfter);
+        };
+    }
+
+    static Specification<Booking> byCheckInDateAfterAndCheckOutDateBefore(Instant checkInDateAfter,
+                                                                          Instant checkOutDateBefore) {
+        return (root, query, criteriaBuilder) -> {
+            if (checkInDateAfter == null || checkOutDateBefore == null) {
+                return null;
+            }
+
+            return criteriaBuilder.and(
+                    criteriaBuilder.lessThan(root.get(Booking_.CHECK_IN_DATE), checkOutDateBefore),
+                    criteriaBuilder.greaterThan(root.get(Booking_.CHECK_OUT_DATE), checkInDateAfter)
+            );
         };
     }
 

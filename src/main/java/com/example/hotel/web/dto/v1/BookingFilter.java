@@ -23,13 +23,13 @@ public record BookingFilter(
         @PositiveOrZero(message = VALIDATE_PAGE_NUMBER_INCORRECT)
         Integer pageNumber,
 
-        Instant checkInDateBefore,
+//        Instant checkInDateBefore,
 
         Instant checkOutDateBefore,
 
         Instant checkInDateAfter,
 
-        Instant checkOutDateAfter,
+//        Instant checkOutDateAfter,
 
         UUID roomId,
 
