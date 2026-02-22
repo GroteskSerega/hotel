@@ -1,0 +1,16 @@
+spring:
+  threads:
+    virtual:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: none # Отключаем во время сборки
+  datasource:
+    hikari:
+      initialization-fail-timeout: 0
+      connection-init-sql: "SELECT 1" # Заглушка
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/test?serverSelectionTimeoutMS=500
+  kafka:
+    bootstrap-servers: localhost:9092

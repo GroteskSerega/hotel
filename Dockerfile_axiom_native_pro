@@ -9,16 +9,29 @@ RUN ./gradlew nativeCompile -PnativeArgs="--pgo-instrument" --no-daemon
 # Compile
 # In CI - start stress tests
 # with default.iprof
-RUN ./build/native/nativeCompile/hotel & sleep 30 && curl ... | true
+RUN ./build/native/nativeCompile/hotel & sleep 30 && \
+    curl -u admin:admin http://localhost:8080/api/v1/user?pageSize=20&pageNumber=0 || true
+#RUN ./build/native/nativeCompile/hotel \
+#    -Dspring.profiles.active=pgo \
+#    -XX:ProfilesDumpFile=/app/default.iprof & \
+#    PID=$!; \
+#    sleep 20; \
+#    curl -s -u admin:admin http://localhost:8080/api/v1/user?pageSize=20 || true; \
+#    kill -SIGTERM $PID && wait $PID || true
 
 # Final compile with profile
 RUN ./gradlew nativeCompile -PnativeArgs="--pgo=default.iprof" --no-daemon
 
+
 # Get Alpaquito
 FROM bellsoft/alpaquita-linux-base:musl
 WORKDIR /app
+
 RUN addgroup -S axiom && adduser -S axiom -G axiom
-USER axiom:axiom
 
 COPY --from=builder /app/build/native/nativeCompile/hotel ./app
+RUN chown axiom:axiom ./app
+
+USER axiom:axiom
+
 ENTRYPOINT ["./app", "-Xmx64m", "-Xms64m"]

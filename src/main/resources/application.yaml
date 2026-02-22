@@ -13,7 +13,7 @@ spring:
     password: ${DB_PASSWORD:postgres}
     hikari:
       schema: ${DB_SCHEMA:hotel_schema}
-      connection-init-sql: CREATE SCHEMA IF NOT EXISTS hotel_schema
+      connection-init-sql: CREATE SCHEMA IF NOT EXISTS ${DB_SCHEMA:hotel_schema}
       connection-timeout: 10000
   data:
     mongodb:
