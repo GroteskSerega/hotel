@@ -2,7 +2,6 @@ package com.example.hotel.web.controller.v1.statistics;
 
 import com.example.hotel.service.statistics.StatisticsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,11 +19,9 @@ public class StatisticsController {
 
     @GetMapping("/download")
     public ResponseEntity<Resource> downloadCsv() {
-        byte[] data = statisticsService.exportDataToCsv();
-        ByteArrayResource resource = new ByteArrayResource(data);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=statistics.csv")
                 .contentType(MediaType.parseMediaType("text/csv"))
-                .body(resource);
+                .body(statisticsService.exportDataToCsvResource());
     }
 }

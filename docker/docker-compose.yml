@@ -56,32 +56,46 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO, kafka.producer.async.DefaultEventHandler=INFO, state.change.logger=INFO"
 #      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://$DOCKERHOST:9092, INSIDE://kafka:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+#      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPIC_ENABLE: 'true'
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 9092 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-#    hotel-app:
-#      image: hotel:axiom
-#      container_name: hotel-axiom
-#      networks:
-#        - hotel-network
-#      ports:
-#        - "8080:8080"
-#      environment:
-#        - APP_SERVER_PORT=8080
-#        - DB_HOST=postgres-db
-#        - DB_PORT=5432
-#        - DB_NAME=hotel_db
-#        - DB_SCHEMA=hotel_schema
-#        - DB_USER=postgres
-#        - DB_PASSWORD=postgres
-#      depends_on:
-#        postgres-db:
-#          condition: service_healthy
-#        mongo-db:
-#          condition: service_healthy
-#        kafka:
+  hotel:
+    image: hotel:native
+    container_name: hotel-native
+    networks:
+      - hotel-network
+    ports:
+      - "8080:8080"
+    environment:
+      - APP_SERVER_PORT=8080
+      - DB_HOST=postgres-db
+      - DB_PORT=5432
+      - DB_NAME=hotel_db
+      - DB_SCHEMA=hotel_schema
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - MONGODB_HOST=mongo-db
+      - MONGODB_PORT=27017
+      - MONGODB_DBNAME=statistics-db
+      - MONGODB_USER=root
+      - MONGODB_PASSWORD=root
+      - KAFKA_HOST=kafka
+      - KAFKA_PORT=9092
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      mongo-db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
 
 networks:
   hotel-network:

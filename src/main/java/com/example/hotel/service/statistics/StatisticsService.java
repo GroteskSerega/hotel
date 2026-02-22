@@ -6,6 +6,8 @@ import com.example.hotel.event.BookingEvent;
 import com.example.hotel.event.UserRegistrationEvent;
 import com.example.hotel.repository.statistics.StatisticsRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -18,12 +20,12 @@ public class StatisticsService {
     private final StatisticsRepository statisticsRepository;
 
     private static final String FIRST_ROW_OF_CSV =
-            "id;type;userId;checkIn;checkOut;timestamp\n";
+            "id;type;userId;checkIn;checkOut;createAt\n";
 
     private static final String ROW_OF_CSV =
             "%s;%s;%s;%s;%s;%s\n";
 
-    public byte[] exportDataToCsv() {
+    public Resource exportDataToCsvResource() {
         List<Statistics> data = statisticsRepository.findAll();
 
         StringBuilder builder = new StringBuilder();
@@ -40,7 +42,8 @@ public class StatisticsService {
                     stat.getCreatedAt()));
         }
 
-        return builder.toString().getBytes(StandardCharsets.UTF_8);
+        byte[] bytes = builder.toString().getBytes(StandardCharsets.UTF_8);
+        return new ByteArrayResource(bytes);
     }
 
     public void saveUserRegistrationEvent(UserRegistrationEvent event) {

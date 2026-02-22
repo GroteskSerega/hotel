@@ -1,0 +1,30 @@
+# Базовый образ, содержащий Java
+# FROM openjdk:27-ea-trixie
+FROM eclipse-temurin:21-jre-alpine
+
+# Директория приложения внутри контейнера
+WORKDIR /app
+
+# Копирование JAR-файла приложения в контейнер
+COPY build/libs/hotel-0.0.1-SNAPSHOT.jar app.jar
+
+# Определение переменной среды
+ENV APP_SERVER_PORT=8080
+ENV APP_ADMIN_USERNAME=admin
+ENV APP_ADMIN_PASSWORD=admin
+ENV DB_HOST=localhost
+ENV DB_PORT=5436
+ENV DB_NAME=hotel_db
+ENV DB_USER=postgres
+ENV DB_PASSWORD=postgres
+ENV DB_SCHEMA=hotel_schema
+ENV MONGODB_HOST=localhost
+ENV MONGODB_PORT=27017
+ENV MONGODB_DBNAME=statistics-db
+ENV MONGODB_USER=root
+ENV MONGODB_PASSWORD=root
+ENV KAFKA_HOST=localhost
+ENV KAFKA_PORT=9092
+
+# Команда для запуска приложения
+CMD ["java", "-jar", "app.jar"]

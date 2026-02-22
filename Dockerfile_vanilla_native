@@ -1,0 +1,33 @@
+# Build
+FROM container-registry.oracle.com/graalvm/native-image:21-ol8 AS build
+WORKDIR /app
+
+USER root
+RUN microdnf install -y findutils git
+
+# Copy gradle and configs
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle.kts settings.gradle.kts ./
+
+# Cache dependencies
+RUN chmod +x gradlew && ./gradlew dependencies --no-daemon
+
+# Copy source
+COPY src src
+RUN ./gradlew nativeCompile -x test --no-daemon
+
+# Get linux
+FROM debian:bookworm-slim
+WORKDIR /app
+
+RUN groupadd -r axiom && useradd -r -g axiom axiom
+
+# Copy binary
+COPY --from=build /app/build/native/nativeCompile/hotel ./app
+
+# Open port
+#EXPOSE 8080
+
+# Start
+ENTRYPOINT ["./app", "-Dio.netty.noUnsafe=true"]
