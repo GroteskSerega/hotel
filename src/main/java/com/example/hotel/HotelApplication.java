@@ -43,6 +43,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 		BookingFilterValid.class,
 		BookingFilterValidValidator.class,
+		BookingDatesValid.class,
+		BookingDatesValidValidator.class,
 
 		ErrorResponse.class,
 
