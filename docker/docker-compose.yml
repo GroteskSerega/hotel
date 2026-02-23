@@ -68,8 +68,8 @@ services:
       retries: 5
 
   hotel:
-    image: hotel:uber
-    container_name: hotel-uber
+    image: hotel:axiom
+    container_name: hotel-axiom
     networks:
       - hotel-network
     ports:
@@ -103,6 +103,28 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - hotel-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - hotel-network
+    depends_on:
+      - prometheus
 
 networks:
   hotel-network:
