@@ -65,7 +65,13 @@ repositories {
 	maven { url = uri("https://repo.spring.io/snapshot") }
 }
 
+springBoot {
+	buildInfo()
+}
+
 dependencies {
+	implementation("io.micrometer:micrometer-registry-prometheus")
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
 	implementation("org.springframework.kafka:spring-kafka")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -83,8 +89,11 @@ dependencies {
 
 	annotationProcessor("org.hibernate.orm:hibernate-jpamodelgen")
 
+	annotationProcessor("org.springframework:spring-context-indexer")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 tasks.withType<Test> {

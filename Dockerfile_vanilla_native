@@ -30,4 +30,5 @@ COPY --from=build /app/build/native/nativeCompile/hotel ./app
 #EXPOSE 8080
 
 # Start
-ENTRYPOINT ["./app", "-Dio.netty.noUnsafe=true"]
+#ENTRYPOINT ["./app", "-Dio.netty.noUnsafe=true"]
+ENTRYPOINT ["./app", "-Xmx64m", "-Xms64m"]
