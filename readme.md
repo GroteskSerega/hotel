@@ -14,6 +14,8 @@
 
 > **Key takeaway**: Оптимизация под Axiom NIK позволяет запускать до 7 инстансов сервиса на тех же ресурсах, где раньше помещался один.
 
+![](images/-88percents.PNG)
+
 ## Core Features
 - **RBAC Model**: Предустановленный ADMIN для инициализации системы, поддержка ролей ADMIN и USER.
 - **Async Engine**: Стек на базе Spring MVC с поддержкой Project Loom.
