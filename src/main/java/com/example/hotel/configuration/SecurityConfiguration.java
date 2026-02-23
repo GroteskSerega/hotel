@@ -52,7 +52,13 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http,
                                            AuthenticationManager authenticationManager) throws Exception {
         http.authorizeHttpRequests((auth) ->
-                auth.requestMatchers(HttpMethod.GET, "/api/v1/hotel")
+                auth.requestMatchers("/actuator/health/**")
+                        .permitAll()
+                        .requestMatchers("/actuator/prometheus")
+                        .permitAll()
+                        .requestMatchers("/actuator/**")
+                        .hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/hotel")
                         .authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/room")
                         .authenticated()
