@@ -22,24 +22,22 @@ public class StatisticsService {
     private static final String FIRST_ROW_OF_CSV =
             "id;type;userId;checkIn;checkOut;createAt\n";
 
-    private static final String ROW_OF_CSV =
-            "%s;%s;%s;%s;%s;%s\n";
+    private static final char DELIMITER_CSV = ';';
 
     public Resource exportDataToCsvResource() {
-        List<Statistics> data = statisticsRepository.findAll();
+        final List<Statistics> data = statisticsRepository.findAll();
 
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder(data.size() * 64);
 
         builder.append(FIRST_ROW_OF_CSV);
 
-        for (Statistics stat : data) {
-            builder.append(String.format(ROW_OF_CSV,
-                    stat.getId(),
-                    stat.getType(),
-                    stat.getUserId(),
-                    stat.getCheckIn(),
-                    stat.getCheckOut(),
-                    stat.getCreatedAt()));
+        for (final Statistics stat : data) {
+            builder.append(stat.getId()).append(DELIMITER_CSV)
+                    .append(stat.getType()).append(DELIMITER_CSV)
+                    .append(stat.getUserId()).append(DELIMITER_CSV)
+                    .append(stat.getCheckIn()).append(DELIMITER_CSV)
+                    .append(stat.getCheckOut()).append(DELIMITER_CSV)
+                    .append(stat.getCreatedAt()).append('\n');
         }
 
         byte[] bytes = builder.toString().getBytes(StandardCharsets.UTF_8);
