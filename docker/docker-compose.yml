@@ -68,8 +68,8 @@ services:
       retries: 5
 
   hotel:
-    image: hotel:axiom
-    container_name: hotel-axiom
+    image: hotel:vanilla-native
+    container_name: hotel-vanilla-native
     networks:
       - hotel-network
     ports:
