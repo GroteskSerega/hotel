@@ -19,6 +19,7 @@ COPY --from=builder /app/application/ ./
 
 # Optimization for java 21:
 ENTRYPOINT ["java", \
+            "-XX:MaxRAMPercentage=75.0", \
             "-XX:+UseG1GC", \
             "-XX:+UnlockExperimentalVMOptions", \
             "-Dspring.threads.virtual.enabled=true", \

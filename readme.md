@@ -4,7 +4,6 @@
 ## Performance Benchmarks (JRE vs Native)
 Сравнение выполнено на стеке Java 21 + Spring Boot 3.5 + Postgres 17.
 
-
 | Метрика                   | JRE (Standard) | Axiom NIK Native  | Win %          |
 |:--------------------------|:---------------|:------------------|:---------------|
 | **Memory (RSS)**          | ~350 MiB       | **49.6 MiB**      | **-86%**       |
@@ -27,6 +26,7 @@
 - **Native Warmup Strategy**: Кастомный WarmupService для прогрева сетевого стека и пулов соединений через ApplicationReadyEvent, устраняющий проблему Cold Start.
 - **Zero-Overhead Observability**: Интеграция с Prometheus и Actuator, адаптированная под Native Image (Zero Classloading Reflection).
 - **Infrastructure-as-Code Friendly**: Полная поддержка health и readiness проб для мгновенного автоскейлинга в Kubernetes/Knative.
+- **Grafana**: Мониторинг сервиса доступен по адресу http://localhost:3000/. ID готового Dashboard 11378.
 
 ## Optimization Details
 - **Static Indexing**: Использование `spring-context-indexer` для исключения сканирования classpath в рантайме.
@@ -186,7 +186,7 @@ docker build -f Dockerfile_axiom_native -t hotel:native .
 - **Startup**: **1,276s** (Агрессивная оптимизация ценой времени сборки).
 - **Issues**: Нестабильность сетевых загрузок при сборке и увеличенный размер итогового образа из-за веса Debian-слоев
 ```
-docker build -f Dockerfile_vanilla_native -t hotel:vanila-native .
+docker build -f Dockerfile_vanilla_native -t hotel:vanilla-native .
 ```
 
 ### 6. Axiom (musl) Native Image Kit (NIK)
@@ -202,64 +202,64 @@ docker build -f Dockerfile_axiom_native_pro -t hotel:native-pro .
 Ниже приведён результат собранных образов, размеры.
 - Размеры образов:
 
-| REPOSITORY | TAG           | IMAGE ID      | BUILDING TIME (s) | SIZE  |
-|------------|---------------|---------------|-------------------|-------|
-| hotel      | layers        | ae26d29918f9  | 7.3               | 460MB |
-| hotel      | uber          | 4cabf402d48b  | 8.5               | 456MB |
-| hotel      | axiom         | af088597f55a  | 12.8              | 362MB |
-| hotel      | native        | bd2e31f8d511  | 800.1             | 317MB |
-| hotel      | vanila-native | abd85388adfc  | 1237.8            | 443MB |
-| hotel      | native-pro    | -             | -                 | -     |
+| REPOSITORY | TAG            | IMAGE ID      | BUILDING TIME (s) | SIZE  |
+|------------|----------------|---------------|-------------------|-------|
+| hotel      | layers         | ae26d29918f9  | 7.3               | 460MB |
+| hotel      | uber           | 4cabf402d48b  | 8.5               | 456MB |
+| hotel      | axiom          | af088597f55a  | 12.8              | 362MB |
+| hotel      | native         | bd2e31f8d511  | 800.1             | 317MB |
+| hotel      | vanilla-native | abd85388adfc  | 1237.8            | 443MB |
+| hotel      | native-pro     | -             | -                 | -     |
 
 - Ниже представлен результат команды Docker stats (1-й запуск).
 
 Внимание заслуживают показатели MEM USAGE и PIDS (количество системных потоков)
 <p> 1-й запуск:
 
-| CONTAINER ID | NAME                | CPU % | MEM USAGE / LIMIT   | MEM % | NET I/O         | BLOCK I/O       | PIDS |
-|--------------|---------------------|-------|---------------------|-------|-----------------|-----------------|------|
-| 68dad70a5e17 | hotel-layers        | 3.24% | 323.4MiB / 15.58GiB | 2.03% | 25.8kB / 26kB   | 8.19kB / 61.4kB | 55   |
-| bd3f0ffd16ef | hotel-uber          | 2.94% | 350.6MiB / 15.58GiB | 2.20% | 24.2kB / 25.4kB | 0B / 49.2kB     | 53   |
-| c209959f86a4 | hotel-axiom         | 0.29% | 399.4MiB / 15.58GiB | 2.50% | 24.1kB / 25.3kB | 0B / 49.2kB     | 55   |
-| a1c22e9f5892 | hotel-native        | 0.05% | 49.08MiB / 15.58GiB | 0.31% | 22.7kB / 24.2kB | 0B / 0B         | 26   |
-| 3e62c302c13d | hotel-vanila-native | 0.03% | 34.54MiB / 15.58GiB | 0.22% | 26.5kB / 25.7kB | 0B / 0B         | 25   |
-| b14f4d920027 | hotel-native-pro    | -     | -                   | -     | -               | -               | -    |
+| CONTAINER ID | NAME                 | CPU % | MEM USAGE / LIMIT   | MEM % | NET I/O         | BLOCK I/O       | PIDS |
+|--------------|----------------------|-------|---------------------|-------|-----------------|-----------------|------|
+| 68dad70a5e17 | hotel-layers         | 3.24% | 323.4MiB / 15.58GiB | 2.03% | 25.8kB / 26kB   | 8.19kB / 61.4kB | 55   |
+| bd3f0ffd16ef | hotel-uber           | 2.94% | 350.6MiB / 15.58GiB | 2.20% | 24.2kB / 25.4kB | 0B / 49.2kB     | 53   |
+| c209959f86a4 | hotel-axiom          | 0.29% | 399.4MiB / 15.58GiB | 2.50% | 24.1kB / 25.3kB | 0B / 49.2kB     | 55   |
+| a1c22e9f5892 | hotel-native         | 0.05% | 49.08MiB / 15.58GiB | 0.31% | 22.7kB / 24.2kB | 0B / 0B         | 26   |
+| 3e62c302c13d | hotel-vanilla-native | 0.03% | 34.54MiB / 15.58GiB | 0.22% | 26.5kB / 25.7kB | 0B / 0B         | 25   |
+| b14f4d920027 | hotel-native-pro     | -     | -                   | -     | -               | -               | -    |
 
 - Ниже представлен результат значений времени запуска и latency по запросу-ответу (1-й запуск).
 
-| CONTAINER ID | NAME                | Started(s) | process running (s) | Latency 1 request (ms) | Latency 2 request (ms) |
-|--------------|---------------------|------------|---------------------|------------------------|------------------------|
-| 68dad70a5e17 | hotel-layers        | 15.524     | 16.461              | 1176                   | 404                    |
-| bd3f0ffd16ef | hotel-uber          | 16.81      | 18.648              | 1019                   | 381                    |
-| c209959f86a4 | hotel-axiom         | 13.8       | 14.763              | 1035                   | 403                    |
-| a1c22e9f5892 | hotel-native        | 1.566      | 1.592               | 1255                   | 388                    |
-| 3e62c302c13d | hotel-vanila-native | 1.357      | 1.377               | 912                    | 436                    |
-| b14f4d920027 | hotel-native-pro    | -          | -                   | -                      | -                      |
+| CONTAINER ID | NAME                 | Started(s) | process running (s) | Latency 1 request (ms) | Latency 2 request (ms) |
+|--------------|----------------------|------------|---------------------|------------------------|------------------------|
+| 68dad70a5e17 | hotel-layers         | 15.524     | 16.461              | 1176                   | 404                    |
+| bd3f0ffd16ef | hotel-uber           | 16.81      | 18.648              | 1019                   | 381                    |
+| c209959f86a4 | hotel-axiom          | 13.8       | 14.763              | 1035                   | 403                    |
+| a1c22e9f5892 | hotel-native         | 1.566      | 1.592               | 1255                   | 388                    |
+| 3e62c302c13d | hotel-vanilla-native | 1.357      | 1.377               | 912                    | 436                    |
+| b14f4d920027 | hotel-native-pro     | -          | -                   | -                      | -                      |
 
 - Ниже представлен результат команды Docker stats (2-й запуск).
 
 Внимание заслуживают показатели MEM USAGE и PIDS (количество системных потоков)
 <p> 2-й запуск:
 
-| CONTAINER ID | NAME                | CPU % | MEM USAGE / LIMIT   | MEM % | NET I/O         | BLOCK I/O   | PIDS |
-|--------------|---------------------|-------|---------------------|-------|-----------------|-------------|------|
-| 68dad70a5e17 | hotel-layers        | 0.39% | 327.9MiB / 15.58GiB | 2.05% | 36.4kB / 39.1kB | 0B / 32.8kB | 55   |
-| bd3f0ffd16ef | hotel-uber          | 3.36% | 346.8MiB / 15.58GiB | 2.17% | 37.9kB / 39.5kB | 0B / 57.3kB | 53   |
-| c209959f86a4 | hotel-axiom         | 0.28% | 395.1MiB / 15.58GiB | 2.48% | 37.9kB / 39.5kB | 0B / 49.2kB | 54   |
-| a1c22e9f5892 | hotel-native        | 0.12% | 49.61MiB / 15.58GiB | 0.31% | 36.4kB / 38.6kB | 0B / 0B     | 26   |
-| 3e62c302c13d | hotel-vanila-native | 2.80% | 36.06MiB / 15.58GiB | 0.23% | 36.4kB / 38.7kB | 0B / 0B     | 26   |
-| b14f4d920027 | hotel-native-pro    | -     | -                   | -     | -               | -           | -    |
+| CONTAINER ID | NAME                 | CPU % | MEM USAGE / LIMIT   | MEM % | NET I/O         | BLOCK I/O   | PIDS |
+|--------------|----------------------|-------|---------------------|-------|-----------------|-------------|------|
+| 68dad70a5e17 | hotel-layers         | 0.39% | 327.9MiB / 15.58GiB | 2.05% | 36.4kB / 39.1kB | 0B / 32.8kB | 55   |
+| bd3f0ffd16ef | hotel-uber           | 3.36% | 346.8MiB / 15.58GiB | 2.17% | 37.9kB / 39.5kB | 0B / 57.3kB | 53   |
+| c209959f86a4 | hotel-axiom          | 0.28% | 395.1MiB / 15.58GiB | 2.48% | 37.9kB / 39.5kB | 0B / 49.2kB | 54   |
+| a1c22e9f5892 | hotel-native         | 0.12% | 49.61MiB / 15.58GiB | 0.31% | 36.4kB / 38.6kB | 0B / 0B     | 26   |
+| 3e62c302c13d | hotel-vanilla-native | 2.80% | 36.06MiB / 15.58GiB | 0.23% | 36.4kB / 38.7kB | 0B / 0B     | 26   |
+| b14f4d920027 | hotel-native-pro     | -     | -                   | -     | -               | -           | -    |
 
 - Ниже представлен результат значений времени запуска и latency по запросу-ответу (2-й запуск).
 
-| CONTAINER ID | NAME                | Started(s) | process running (s) | Latency 1 request (ms) | Latency 2 request (ms) |
-|--------------|---------------------|------------|---------------------|------------------------|------------------------|
-| 68dad70a5e17 | hotel-layers        | 15.227     | 15.853              | 1121                   | 411                    |
-| bd3f0ffd16ef | hotel-uber          | 16.628     | 17.996              | 1212                   | 453                    |
-| c209959f86a4 | hotel-axiom         | 14.411     | 15.09               | 1141                   | 451                    |
-| a1c22e9f5892 | hotel-native        | 1.458      | 1.472               | 879                    | 435                    |
-| 3e62c302c13d | hotel-vanila-native | 1.276      | 1.286               | 864                    | 451                    |
-| b14f4d920027 | hotel-native-pro    | -          | -                   | -                      | -                      |
+| CONTAINER ID | NAME                 | Started(s) | process running (s) | Latency 1 request (ms) | Latency 2 request (ms) |
+|--------------|----------------------|------------|---------------------|------------------------|------------------------|
+| 68dad70a5e17 | hotel-layers         | 15.227     | 15.853              | 1121                   | 411                    |
+| bd3f0ffd16ef | hotel-uber           | 16.628     | 17.996              | 1212                   | 453                    |
+| c209959f86a4 | hotel-axiom          | 14.411     | 15.09               | 1141                   | 451                    |
+| a1c22e9f5892 | hotel-native         | 1.458      | 1.472               | 879                    | 435                    |
+| 3e62c302c13d | hotel-vanilla-native | 1.276      | 1.286               | 864                    | 451                    |
+| b14f4d920027 | hotel-native-pro     | -          | -                   | -                      | -                      |
 
 
 Необходимо отметить, что скрость запуска образов с JRE составила 13,5 - 18,5 секунд
