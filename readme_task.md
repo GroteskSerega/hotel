@@ -1,195 +1,208 @@
-# Финальная работа курса «Разработка на Spring Framework»
-## Опроекте
-Вам предстоит разработать бэкенд-составляющую сервиса бронирования отелей с возможностью управлять контентом через административную панель CMS.
+# Final Project: "Development with Spring Framework" Course
+## About the Project
 
-Главная задача — обеспечить пользователям возможность забронировать понравившийся
-отель на определённый период.
+You are to develop the backend component of a hotel booking service, featuring content management capabilities through an administrative CMS panel.
 
-Помимо этого, нужно сделать поиск отелей по критериям и рейтингам и систему
-выставления оценок в приложении (от 1 до 5).
+The primary goal is to enable users to book their chosen hotel for a specific period.
 
-Сервис должен позволять администраторам выгружать статистику по работе в формате
-CSV-файла.
+In addition, you must implement a hotel search system based on criteria and ratings, along with an in-app scoring system (from 1 to 5).
 
-### Задание 1. Подготовка окружения
-- Создайте проект с необходимыми зависимостями для разработки приложения. Вам понадобится Spring, Spring Web MVC, Spring Data, Mapstruct.
-- Создайте новую базу данных для приложения.
-- Опишитефайл docker-compose, который будет содержать контейнер с вашим приложением и контейнер с PostgreSQL.
+The service must allow administrators to export operational statistics as a CSV file.
 
-### Задание 2. Работа с отелями
-- Опишитесущность «Отель». У каждого объекта должно быть название, заголовок объявления, город, в котором расположен отель, адрес, расстояние от центра города, рейтинг (от 1 до 5) и количество оценок, на основе которых был рассчитан рейтинг.
-- Создайте в базе данных таблицу для хранения информации об отелях.
-- Настройте отображение данных из таблицы на поля в сущности в Java.
-- Создайте интерфейс для работы с сущностью «Отель», используя Spring Data JPA. Интерфейс должен предоставлять возможность выполнять CRUD-операции.
-- Создайте сервис для работы с отелями. Сервис должен предоставлять возможность выполнять CRUD-операции.
-- Опишите объекты передачи данных DTO (Data Transfer Object), которые будут применяться в контроллерах при запросе пользователя и ответах ему.
-- - Опишите DTO HTTP-запроса, который будет использоваться в слое контроллеров при запросе на создание или редактирование сущности «Отель». Обратите внимание, что рейтинг отеля и количество поставленных оценок нельзя изменить при помощи HTTP-запросов.
-- - Опишите DTO HTTP-ответа, который будет использоваться в слое контроллеров для возвращения сущности «Отель».
-- - Опишите DTO HTTP-ответа, который будет использоваться в слое контроллеров для возвращения списка объектов (других DTO) с пагинацией.
-- Спомощьюбиблиотеки Mapstruct создайте сервисы для маппинга сущностей в DTO и DTO в сущности:
-- - из DTO на создание или редактирование в сущность «Отель»;
-- - изсущности «Отель» в DTO на редактирование сущности;
-- - изсущности «Отель» в DTO, описывающее сущность «Отель» (в этой DTO должен быть рейтинг отеля и количество поставленных оценок).
-- Создайте контроллер выполнения для CRUD-операций над отелями с помощью REST API. Контроллер должен содержать следующие методы:
-- - методпоиска по ID конкретного отеля;
-- - создание отеля;
-- - редактирование отеля;
-- - удаление отеля;
-- - получение списка всех имеющихся отелей.
+### Task 1. Environment Setup
+- Create a project with the necessary dependencies. You will need Spring, Spring Web MVC, Spring Data, and MapStruct.
+- Create a new database for the application.
+- Define a docker-compose file containing your application container and a PostgreSQL container.
 
-### Задание 3. Обработка ошибок
-- Опишите DTO,который вернётся в случае ошибок в сервисе.
-- Опишите advice, который обработает ошибки и вернёт их пользователям DTO с сообщением, а также корректный HTTP-код ответа с указанием:
-- - на отсутствие сущности в БД — возвращение кода 404;
-- - клиентские ошибки (неправильный ввод, некорректные данные) — возвращение кода 400;
-- - необработанные ошибки — возвращение кода 500.
+### Task 2. Hotel Management
+- Define the "Hotel" Entity: Each object must include a name, advertisement title, city, address, distance from the city center, rating (1 to 5), and the total number of ratings used to calculate the average.
+- Database Schema: Create a table in the database to store hotel information.
+- ORM Mapping: Configure the mapping between the database table columns and Java entity fields.
+- Repository Layer: Create a Spring Data JPA interface for the "Hotel" entity to support full CRUD operations.
+- Service Layer: Implement a Hotel Service to handle business logic and CRUD operations.
+- Data Transfer Objects (DTOs): Define DTOs for handling controller requests and responses:
+- - Request DTO: For creating or editing a "Hotel." Note: The rating and total number of ratings must not be modifiable via HTTP requests.
+- - Response DTO: For returning a single "Hotel" entity.
+- - Paginated Response DTO: For returning a list of objects (other DTOs) with pagination support.
+- Mapping with MapStruct: Create mapping services to convert between entities and DTOs:
+- - From Create/Update DTO to "Hotel" entity.
+- - From "Hotel" entity to Update DTO.
+- - From "Hotel" entity to Response DTO (this DTO must include the rating and the number of ratings).
+- REST API Controller: Implement a controller for Hotel CRUD operations. The controller must include the following endpoints:
+- - Find a specific hotel by ID.
+- - Create a new hotel.
+- - Update an existing hotel.
+- - Delete a hotel.
+- - Retrieve a list of all available hotels.
 
-### Задание 4. Работа с комнатами
-- Опишите сущность «Комната». Для каждого объекта указываются: название, описание, номер, цена, максимальное количество людей, которое можно разместить, и даты, когда комната недоступна. Каждая комната находится в конкретном отеле.
-- Создайте в базе данных таблицу для хранения информации о комнатах.
-- Настройте отображение данных из таблицы на поля в сущности в Java.
-- Создайте интерфейс для работы с сущностью «Комната», используя Spring Data JPA. Интерфейс должен предоставлять возможность выполнять CRUD-операции.
-- Создайте сервис для работы с комнатами. Сервис должен предоставлять возможность выполнять CRUD-операции.
-- Опишите объекты передачи данных DTO (Data Transfer Object), которые будут применяться в контроллерах при запросе пользователя и ответах ему.
-- - Опишите DTO HTTP-запроса, который будет использоваться в слое контроллеров при запросе на создание или редактирование сущности «Комната».
-- - Опишите DTO HTTP-ответа, который будет использоваться в слое контроллеров для возвращения сущности «Комната».
-- Спомощью библиотеки Mapstruct создайте сервисы для маппинга сущностей в DTO и DTO в сущности:
-- - из DTO на создание или редактирование в сущность «Комната»;
-- - из сущности «Комната» в DTO на редактирование сущности;
-- - из сущности «Комната» в DTO, которое описывает сущность «Комната».
-- Создайте контроллер выполнения для CRUD-операций над комнатами с помощью REST API. Контроллер должен содержать следующие методы:
-- - методпоиска по ID конкретной комнаты;
-- - создание комнаты;
-- - редактирование комнаты;
-- - удаление комнаты.
+### Task 3. Error Handling
+- Error DTO: Define a Data Transfer Object (DTO) to be returned when service-level errors occur.
+- Controller Advice: Implement a @ControllerAdvice to intercept exceptions and return a structured Error DTO with a descriptive message and the appropriate HTTP status code:
+- - Entity Not Found: Return a 404 Not Found status if the entity is missing from the database.
+- - Client Errors: Return a 400 Bad Request status for invalid input or incorrect data.
+- - Unhandled Exceptions: Return a 500 Internal Server Error for any other unexpected errors.
 
-### Задание 5. Работа с пользователями
-- Опишитесущность «Пользователь». У каждого пользователя есть уникальное имя, пароль, электронная почта и роль (пользователь или администратор).
-- Создайте в базе данных таблицу для хранения информации о пользователях.
-- Настройте отображение данных из таблицы на поля в сущности в Java.
-- Создайте интерфейс для работы с сущностью «Пользователь», используя Spring Data JPA. Интерфейс должен предоставлять возможность:
-- - выполнять CRUD-операции;
-- - искать пользователя по его имени;
-- - проверять, существует ли пользователь с указанными именем и адресом электронной почты.
-- Создайте сервис для работы с пользователями. Сервис должен предоставлять возможность:
-- - выполнять CRUD-операции;
-- - создавать нового пользователя;
-- - искать пользователя по имени.
-- Опишитеобъекты передачи данных DTO (Data Transfer Object), которые будут применяться в контроллерах при запросе пользователя и ответах ему.
-- - Опишите DTO HTTP-запроса, который будет использоваться в слое контроллеров при запросе на создание или редактирование сущности «Пользователь».
-- - Опишите DTO HTTP-ответа, который будет использоваться в слое контроллеров для возвращения сущности «Пользователь».
-- Спомощьюбиблиотеки Mapstruct создайте сервисы для маппинга сущностей в DTO и DTO в сущности:
-- - из DTO на создание или редактирование в сущность «Пользователь»;
-- - из сущности «Пользователь» в DTO на редактирование сущности;
-- - из сущности «Пользователь» в DTO, которое описывает сущность «Пользователь».
-- Создайте контроллер выполнения для CRUD-операций над пользователями посредством REST API. Контроллер должен содержать метод создания нового пользователя с указанной ролью (роль принимается как один из параметров при создании пользователя). Перед созданием нового пользователя требуется проверка по логину и почте на отсутствие уже зарегистрированного аккаунта с такими же данными.
+### Task 4. Room Management
+- Define the "Room" Entity: Each object must include a name, description, room number, price, maximum occupancy (capacity), and a list of unavailable dates. Every room must be associated with a specific hotel.
+- Database Schema: Create a table in the database to store room information.
+- ORM Mapping: Configure the mapping between the database table columns and the Java entity fields.
+- Repository Layer: Create a Spring Data JPA interface for the "Room" entity to support full CRUD operations.
+- Service Layer: Implement a Room Service to handle business logic and CRUD operations.
+- Data Transfer Objects (DTOs): Define DTOs for handling controller requests and responses:
+- - Request DTO: For creating or editing a "Room."
+- - Response DTO: For returning a single "Room" entity.
+- Mapping with MapStruct: Create mapping services to convert between entities and DTOs:
+- - From Create/Update DTO to "Room" entity.
+- - From "Room" entity to Update DTO.
+- - From "Room" entity to Response DTO.
+- REST API Controller: Implement a controller for Room CRUD operations. The controller must include the following endpoints:
+- - Find a specific room by ID.
+- - Create a new room.
+- - Update an existing room.
+- - Delete a room.
 
-### Задание 6. Работа с бронированием
-- Опишите сущность «Бронирование». Она включает даты заезда и выезда, информацию о забронированной комнате и пользователе, который осуществляет бронирование.
-- Создайте в базе данных таблицу для хранения информации о бронированиях.
-- Настройте отображение данных из таблицы на поля в сущности в Java.
-- Создайте интерфейс для работы с сущностью «Бронирование», используя Spring Data JPA. Интерфейс должен предоставлять возможность выполнять CRUD-операции.
-- Создайте сервис бронирования. Сервис должен предоставлять возможность:
-- - Пользователям бронировать комнаты на указанные даты. Обратите внимание, что бронируется именно комната. Забронировать комнату могут разные пользователи и несколько раз, однако только на свободные даты.
-- - Получать список всех оформленных броней.
-- Опишите объекты передачи данных DTO (Data Transfer Object), которые будут применяться в контроллерах при запросе пользователя и ответах ему.
-- - Опишите DTO HTTP-запроса, который будет использоваться в слое контроллеров при запросе на бронирование.
-- - Опишите DTO HTTP-ответа, который будет использоваться в слое контроллеров для возвращения результата операции бронирования.
-- Создайте контроллер для бронирования. Контроллер должен содержать следующие методы:
-- - Длябронирования комнаты.
-- - Получения всех оформленных броней.
+### Task 5. User Management
+- Define the "User" Entity: Each user must have a unique username, password, email address, and a role (either USER or ADMIN).
+- Database Schema: Create a table in the database to store user information.
+- ORM Mapping: Configure the mapping between the database table columns and the Java entity fields.
+- Repository Layer: Create a Spring Data JPA interface for the "User" entity. The interface must provide capabilities to:
+- - Perform full CRUD operations.
+- - Find a user by their username.
+- - Check if a user already exists with a specific username and email address.
+- Service Layer: Implement a User Service with the following capabilities:
+- - Perform full CRUD operations.
+- - Create a new user.
+- - Find a user by their username.
+- Data Transfer Objects (DTOs): Define DTOs for handling controller requests and responses:
+- - Request DTO: For creating or editing a "User."
+- - Response DTO: For returning a single "User" entity.
+- Mapping with MapStruct: Create mapping services to convert between entities and DTOs:
+- - From Create/Update DTO to "User" entity.
+- - From "User" entity to Update DTO.
+- - From "User" entity to Response DTO.
+- REST API Controller: Implement a controller for User operations. The controller must include a method to create a new user with a specified role (the role is passed as a parameter during creation). Pre-registration check: Before creating a new user, verify that no account already exists with the same username or email.
 
-### Задание 7. Настройка Spring Security в приложении
-Опишите все необходимые сервисы и конфигурации для настройки Spring Security в вашем приложении. Для разработки сервиса используйте Basic Auth.
-- Опишите объект UserDetails, который будет содержать нужные поля и роли, а также сервис считывания пользователей из базы данных — UserDetailsService.
-- Опишите базовую конфигурацию Spring Security. В вашем сервисе доступ без авторизации пользователя будет возможен только для эндпоинта регистрации.
-- Измените созданные контроллеры:
-- - чтобы регистрация пользователя была доступна без авторизации;
-- - создание, редактирование и удаление отелей было доступно только администратору;
-- - создание, редактирование и удаление комнат было доступно только администратору;
-- - получение списка броней было доступно только администратору;
-- - всеостальные методы были доступны и пользователю, и администратору, но только при авторизации.
+### Task 6. Booking Management
+- Define the "Booking" Entity: This entity must include check-in and check-out dates, as well as information about the booked room and the user performing the booking.
+- Database Schema: Create a table in the database to store booking information.
+- ORM Mapping: Configure the mapping between the database table columns and the Java entity fields.
+- Repository Layer: Create a Spring Data JPA interface for the "Booking" entity to support full CRUD operations.
+- Booking Service: Implement a service that provides the following capabilities:
+- - Room Reservation: Allow users to book rooms for specified dates. Note: The booking is tied to a specific room. Different users can book the same room multiple times, but only for dates when the room is available.
+- - Retrieve Bookings: Get a list of all existing reservations.
+- Data Transfer Objects (DTOs): Define DTOs for handling controller requests and responses:
+- - Request DTO: For creating a new booking request.
+- - Response DTO: For returning the result of a booking operation.
+- REST API Controller: Implement a controller for booking operations. The controller must include the following endpoints:
+- - Book a room.
+- - Retrieve a list of all processed bookings.
 
-### Задание 8. Создание метода изменения рейтинга отеля
-Создайте метод в контроллере сущности «Отель», который позволит менять рейтинг отеля (по шкале оценивания от 1 до 5). Контроллер должен быть доступен обычному пользователю и администратору.
+### Task 7. Spring Security Configuration
+Implement all necessary services and configurations to secure your application using Spring Security. Use Basic Auth for development.
+- Security Models and Services:
+- Define the UserDetails object, including the required fields and roles.
+- Implement the UserDetailsService to load user data from the database.
+- Base Security Configuration: Configure Spring Security so that unauthorized access is permitted only for the registration endpoint.
+- Controller Access Control: Update the existing controllers to enforce the following rules:
+- - Public Access: User registration must be available without authentication.
+- - Admin Only: Creating, editing, and deleting Hotels must be restricted to users with the ADMIN role.
+- - Admin Only: Creating, editing, and deleting Rooms must be restricted to users with the ADMIN role.
+- - Admin Only: Retrieving the list of all bookings must be restricted to the ADMIN role.
+- - Authenticated Users: All other methods must be accessible to both USER and ADMIN roles, but only after successful authentication.
 
-Изменение рейтинга отеля будет происходить по следующей формуле:
+### Task 8. Hotel Rating Update Logic
 
-**Если:**
-- rating - текущий рейтинг;
-- newMark - новая оценка;
-- totalRating - сумма всех оценок;
-- numberOfRating - общее количество оценок.
+Implement a method in the Hotel Controller to allow updating a hotel's rating (on a scale of 1 to 5). This endpoint must be accessible to both USER and ADMIN roles.
 
-**Тогда:**
-- Сначала вычисляется сумма всех оценок (totalRating) путём умножения текущего рейтинга (rating) на общее количество оценок (numberOfRating):
+The rating update must follow this specific formula:
+
+**Given:**
+
+- rating: Current average rating.
+- newMark: The new score provided by a user.
+- totalRating: The sum of all scores.
+- numberOfRatings: The total count of ratings provided so far.
+
+**Calculation Steps:**
+
+- Calculate the current total sum: Multiply the current rating by the numberOfRatings.
 ```
 totalRating = rating × numberOfRating
 ```
 
-- Затем вычитается текущий рейтинг (rating) из полученной суммы (totalRating) и добавляется новая оценка (newMark):
+- Adjust the total sum: Subtract the current rating from the totalRating and add the newMark.
 ```
 totalRating = totalRating − rating + newMark
 ```
 
-- Далее вычисляется новый средний рейтинг (новое значение rating) путём деления суммы всех оценок (totalRating) на общее количество оценок (numberOfRating) с округлением до одной десятой (один знак после запятой):
+- Calculate the new average: Divide the updated totalRating by the numberOfRatings. The result must be rounded to one decimal place.
 ```
 rating = totalRating / numberOfRating
-(округление до одного знака после запятой)
+(round to 1 decimal place)
 ```
 
-- Далее общее количество оценок (numberOfRating) увеличивается на единицу, так как добавилась одна новая оценка.
+- Update the count: Increment the numberOfRatings by one to account for the new entry.
 ```
 numberOfRating = numberOfRating + 1
 ```
 
-### Задание 9. Разработка метода, отдающего постраничную информацию об отелях с учётом фильтрации от пользователя
-- Опишите DTO,который будет отдавать список объектов с числом всех имеющихся записей в БД. Этот DTO должен использоваться при работе с пагинацией.
-- Добавьте метод в контроллер для сущности «Отель» с возможностью фильтрации по следующим категориям:
-- - ID отеля;
-- - название отеля;
-- - заголовок объявления;
-- - город;
-- - адрес;
-- - расстояние до центра города;
-- - рейтинг и число рейтингов.
-- Добавьте возможность задавать параметры пагинации на запрос по отелям (количество отелей на странице и номер страницы). Для написания фильтрации используйте JPA Specification.
+### Task 9. Paginated Hotel Search with Filtering
+- Paginated List DTO: Define a DTO that returns a list of objects along with the total number of records available in the database. This DTO must be used to support response pagination.
+- Filtering Implementation: Add a method to the Hotel Controller that allows filtering results by the following categories:
+- - Hotel ID
+- - Hotel name
+- - Advertisement title
+- - City
+- - Address
+- - Distance to the city center
+- - Rating and number of ratings
+- Pagination Parameters: Enable the use of pagination parameters (such as page number and page size) for hotel search requests.
+- JPA Specification: Use the JPA Specification API to implement the dynamic filtering logic.
 
-### Задание 10. Разработка метода, отдающего постраничную информацию о комнатах с учётом фильтрации от пользователя
-- Добавьте метод в контроллер для сущности «Комната» с возможностью фильтрации по следующим категориям:
-- - ID комнаты;
-- - заголовок;
-- - минимальная и максимальная цена;
-- - количество гостей в комнате;
-- - датазаезда и дата выезда;
-- - ID отеля.
-- Необходимо добавить возможность задавать параметры пагинации на запрос по комнатам (количество комнат на странице и номер страницы). Для написания фильтрации используйте JPA Specification.
-- Фильтрация по датам заезда и выезда должна учитывать оба поля. Если заполнено только одно из полей, фильтрация не срабатывает. При выборе дат заезда и выезда нужно показывать только те номера, которые свободны в этом временном диапазоне.
-- Измените метод получения информации об оформленных бронированиях таким образом, чтобы он поддерживал пагинацию.
+### Task 10. Paginated Room Search with Advanced Filtering
+- Filtering Implementation: Add a method to the Room Controller that supports filtering by the following criteria:
+- - Room ID
+- - Room title
+- - Minimum and maximum price
+- - Number of guests (occupancy)
+- - Check-in and check-out dates
+- - Hotel ID
+- Pagination: Implement support for pagination parameters (page number and page size) for room search requests using JPA Specification.
+- Date Range Filtering Logic:
+- - Filtering by dates must consider both check-in and check-out fields. If only one field is provided, the filter must be ignored.
+- - When dates are specified, the search must return only rooms that are available within the entire selected range.
+- Booking History: Update the existing method for retrieving processed bookings to support pagination.
 
-**Пояснение.** В отеле есть номер, который забронирован на следующие даты:
-- 01.01.23–10.01.23;
-- 20.01.23–30.01.23.
-Если в полях фильтра были указаны даты с 03.01.23 (заезд) по 11.01.23 (выезд), то номера отеля, забронированные на даты 01.01.23–10.01.23, не попадут в выборку. Если были выбраны даты с 11.01.23 (заезд) по 19.01.23 (выезд), в выборку попадут номера отеля, забронированные на даты:
-- 01.01.23–10.01.23;
-- 20.01.23–30.01.23.
+**Example Scenario:**
 
-### Задание 11. Создание слоя, отвечающего за сбор статистики в приложении
-Создайте слой статистики, который будет работать с Kafka (получение статистической информации) и MongoDB (хранение информации). Напишите сервис внутри этого слоя с методом выгрузки статистических данных в CSV-файл.
-Всего в сервисе должно быть два события, которые будут обрабатываться этим слоем, — регистрация пользователя и бронирование комнаты.
-- В событии регистрации должны храниться данные о созданном пользователе (его ID).
-- В событии бронирования комнаты должны храниться данные о пользователе, который оформил бронь (его ID), а также о датах заезда и выезда. Данные по этим событиям нужно хранить в MongoDB в формате JSON.
-- Опишите базовые события в сервисе. Создайте модели для отправки и обработки событий.
-- Опишите настройки для Kafka. Добавьте сервисы Kafka и ZooKeeper в docker-compose.yml.
-- Создайте сущность, репозиторий и сервис для работы со статистикой.
-- Создайте сервис для выгрузки всех статистических данных в CSV-файл.
-- Добавьте отправку событий при регистрации нового пользователя и бронировании комнаты.
-- Добавьте контроллер для работы со статистическими данными. Контроллер должен предоставлять метод для скачивания CSV-файла с накопленными статистическими данными. Метод должен быть доступен только администратору.
+A specific room is already booked for the following periods:
 
-##  Рекомендации по выполнению
-1. При написании сервиса (основной бизнес-логики) используйте Spring MVC и PostgreSQL.
-2. При написании слоя статистики используйте MongoDB.
-3. Ниже указаны связи сущностей в БД.
+- Jan 01, 2023 – Jan 10, 2023
+- Jan 20, 2023 – Jan 30, 2023
+
+1. If a user searches for Jan 03 – Jan 11, this room must be excluded from the results (because it overlaps with the first booking).
+2. If a user searches for Jan 11 – Jan 19, this room must be included in the results (as it is free during this gap).
+
+### Task 11. Statistical Analysis Layer Implementation
+Develop a statistics layer that utilizes Kafka for data ingestion and MongoDB for persistent storage. Implement a service within this layer to export collected statistical data into a CSV file.
+The system must handle two specific event types: User Registration and Room Booking.
+
+- Registration Event: Must store the newly created user's ID.
+- Booking Event: Must store the ID of the user who made the reservation, along with the check-in and check-out dates.
+- Storage: All event data must be stored in MongoDB in JSON format.
+
+**Requirements:**
+- Event Models: Define base events and create models for both sending (producing) and processing (consuming) these events.
+- Kafka Configuration: Configure Kafka settings and add Kafka and Zookeeper services to the docker-compose.yml file.
+- Persistence & Logic: Create the entity, repository, and service required to manage statistics within MongoDB.
+- CSV Export Service: Implement a service to aggregate and export all statistical records into a CSV format.
+- Event Triggers: Integrate event publishing logic into the existing User Registration and Room Booking flows.
+- Statistics Controller: Implement a controller with an endpoint to download the generated CSV file. Access to this method must be restricted to the ADMIN role only.
+
+## Implementation Guidelines
+1. Core Service: Use Spring MVC and PostgreSQL for implementing the primary business logic.
+2. Statistics Layer: Use MongoDB to store and manage the statistical data.
+3. Entity Relationships: Refer to the database diagram below for the entity relationship mapping.
 ![](/images/relations.png)
-4. При разработке проекта опирайтесь на схему выше.
-5. Полностью соблюдайте требования для сервиса, которые подробно описаны в каждом задании.
+4. Schema Adherence: Ensure the project implementation strictly follows the provided database schema.
+5. Compliance: Fully adhere to the specific service requirements detailed in each task.
